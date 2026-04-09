@@ -1,278 +1,1844 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="light">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NeuroFilter | Lead Developer Payal</title>
-    
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
-    
-    <style>
-        :root {
-            --bg-dark: #0b0f1a;       
-            --card-bg: #161b2a;     
-            --accent-purple: #a855f7; 
-            --accent-mint: #4ade80; /* New color for Insights */
-            --text-heading: #ffffff;  
-            --text-body: #cbd5e1;     
-        }
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>NeuroFilter — Internet Usage Analyzer</title>
 
-        body {
-            background-color: var(--bg-dark);
-            color: var(--text-body);
-            font-family: 'Inter', sans-serif;
-            overflow-x: hidden;
-        }
+  <!-- Bootstrap 5 CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <!-- Bootstrap Icons -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet" />
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
 
-        /* Branding & Signature */
-        .brand-text {
-            font-weight: 800;
-            letter-spacing: 1px;
-            color: var(--accent-purple);
-            text-transform: uppercase;
-        }
+  <style>
+    /* =============================================
+       GLOBAL VARIABLES & BASE
+    ============================================= */
+    :root {
+      --primary:       #6366f1;
+      --primary-dark:  #4f46e5;
+      --primary-light: #e0e7ff;
+      --accent:        #06b6d4;
+      --success:       #22c55e;
+      --warning:       #f59e0b;
+      --danger:        #ef4444;
+      --bg:            #f8fafc;
+      --surface:       #ffffff;
+      --surface-2:     #f1f5f9;
+      --text-primary:  #0f172a;
+      --text-muted:    #64748b;
+      --border:        #e2e8f0;
+      --shadow-sm:     0 1px 3px rgba(0,0,0,.08), 0 1px 2px rgba(0,0,0,.04);
+      --shadow-md:     0 4px 16px rgba(0,0,0,.10), 0 2px 6px rgba(0,0,0,.06);
+      --shadow-lg:     0 10px 40px rgba(0,0,0,.12), 0 4px 12px rgba(0,0,0,.08);
+      --radius-sm:     0.5rem;
+      --radius-md:     0.875rem;
+      --radius-lg:     1.25rem;
+      --transition:    all .25s cubic-bezier(.4,0,.2,1);
+    }
 
-        .dev-signature {
-            font-size: 0.85rem;
-            letter-spacing: 2px;
-            text-transform: uppercase;
-            color: var(--accent-purple);
-            font-weight: 700;
-            opacity: 0.8;
-        }
+    /* Dark mode */
+    [data-theme="dark"] {
+      --primary:       #818cf8;
+      --primary-dark:  #6366f1;
+      --primary-light: #1e1b4b;
+      --accent:        #22d3ee;
+      --bg:            #0f172a;
+      --surface:       #1e293b;
+      --surface-2:     #334155;
+      --text-primary:  #f1f5f9;
+      --text-muted:    #94a3b8;
+      --border:        #334155;
+      --shadow-sm:     0 1px 3px rgba(0,0,0,.3);
+      --shadow-md:     0 4px 16px rgba(0,0,0,.4);
+      --shadow-lg:     0 10px 40px rgba(0,0,0,.5);
+    }
 
-        /* Page Transitions */
-        .page-content {
-            display: none;
-            animation: slideUp 0.4s ease-out forwards;
-        }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
 
-        .active-page { display: block; }
+    html { scroll-behavior: smooth; }
 
-        @keyframes slideUp {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--bg);
+      color: var(--text-primary);
+      transition: background .3s, color .3s;
+      overflow-x: hidden;
+    }
 
-        /* Cards & Buttons */
-        .glass-card {
-            background: var(--card-bg);
-            border: 1px solid rgba(168, 85, 247, 0.2);
-            border-radius: 20px;
-            padding: 40px;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.4);
-        }
+    /* =============================================
+       NAVBAR
+    ============================================= */
+    .navbar {
+      background: var(--surface) !important;
+      border-bottom: 1px solid var(--border);
+      box-shadow: var(--shadow-sm);
+      padding: .875rem 0;
+      transition: var(--transition);
+    }
 
-        .btn-neuro {
-            background: linear-gradient(135deg, #7c3aed 0%, #a855f7 100%);
-            color: white;
-            border: none;
-            padding: 12px 30px;
-            border-radius: 8px;
-            font-weight: 600;
-            transition: 0.3s;
-        }
+    .navbar-brand {
+      font-weight: 800;
+      font-size: 1.15rem;
+      color: var(--primary) !important;
+      display: flex;
+      align-items: center;
+      gap: .5rem;
+    }
 
-        .btn-neuro:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 10px 20px rgba(168, 85, 247, 0.4);
-            color: white;
-        }
+    .navbar-brand .brand-icon {
+      width: 34px; height: 34px;
+      background: linear-gradient(135deg, var(--primary), var(--accent));
+      border-radius: .5rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+      font-size: 1rem;
+    }
 
-        /* Insights Page Specific Labels */
-        .insight-label {
-            color: var(--accent-mint);
-            font-weight: 700;
-            text-transform: uppercase;
-            font-size: 0.75rem;
-            letter-spacing: 1.5px;
-        }
+    .nav-link {
+      color: var(--text-muted) !important;
+      font-weight: 500;
+      font-size: .9rem;
+      padding: .4rem .85rem !important;
+      border-radius: 6px;
+      transition: var(--transition);
+    }
 
-        .form-control {
-            background: #0b0f1a;
-            border: 1px solid #334155;
-            color: white;
-            padding: 15px;
-        }
+    .nav-link:hover, .nav-link.active {
+      color: var(--primary) !important;
+      background: var(--primary-light);
+    }
 
-        .form-control:focus {
-            background: #0b0f1a;
-            border-color: var(--accent-purple);
-            box-shadow: none;
-            color: white;
-        }
+    .btn-theme {
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+      color: var(--text-muted);
+      border-radius: .5rem;
+      padding: .4rem .75rem;
+      font-size: .95rem;
+      cursor: pointer;
+      transition: var(--transition);
+    }
 
-        .nav-btn {
-            color: white;
-            font-weight: 500;
-            border: none;
-            background: transparent;
-            padding: 8px 15px;
-            transition: 0.3s;
-        }
+    .btn-theme:hover { background: var(--border); color: var(--text-primary); }
 
-        .nav-btn:hover { color: var(--accent-purple); }
+    .navbar-toggler {
+      border-color: var(--border) !important;
+      color: var(--text-muted) !important;
+    }
 
-        footer {
-            margin-top: 100px;
-            padding: 40px 0;
-            border-top: 1px solid rgba(255,255,255,0.05);
-            text-align: center;
-        }
-    </style>
+    /* =============================================
+       HERO SECTION
+    ============================================= */
+    #home {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      position: relative;
+      overflow: hidden;
+      padding: 6rem 0 4rem;
+    }
+
+    .hero-bg {
+      position: absolute; inset: 0;
+      background: linear-gradient(135deg,
+        #667eea22 0%, #764ba222 25%,
+        #06b6d411 50%, #818cf822 75%, #667eea11 100%);
+      pointer-events: none;
+    }
+
+    .hero-dots {
+      position: absolute; inset: 0;
+      background-image: radial-gradient(var(--border) 1px, transparent 1px);
+      background-size: 28px 28px;
+      opacity: .6;
+      pointer-events: none;
+    }
+
+    .hero-blob {
+      position: absolute;
+      border-radius: 50%;
+      filter: blur(80px);
+      opacity: .18;
+      pointer-events: none;
+    }
+
+    .hero-blob-1 {
+      width: 500px; height: 500px;
+      background: var(--primary);
+      top: -150px; right: -100px;
+    }
+
+    .hero-blob-2 {
+      width: 350px; height: 350px;
+      background: var(--accent);
+      bottom: -100px; left: -80px;
+    }
+
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: .5rem;
+      background: var(--primary-light);
+      color: var(--primary);
+      border: 1px solid var(--primary);
+      border-radius: 50px;
+      padding: .4rem 1rem;
+      font-size: .8rem;
+      font-weight: 600;
+      margin-bottom: 1.5rem;
+      letter-spacing: .03em;
+    }
+
+    .hero-title {
+      font-size: clamp(2rem, 5vw, 3.5rem);
+      font-weight: 800;
+      line-height: 1.15;
+      margin-bottom: 1.25rem;
+      color: var(--text-primary);
+    }
+
+    .hero-title .highlight {
+      background: linear-gradient(135deg, var(--primary), var(--accent));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .hero-sub {
+      font-size: 1.1rem;
+      color: var(--text-muted);
+      line-height: 1.75;
+      max-width: 520px;
+      margin-bottom: 2.25rem;
+    }
+
+    .btn-primary-custom {
+      background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+      border: none;
+      color: #fff;
+      padding: .85rem 2rem;
+      border-radius: var(--radius-sm);
+      font-weight: 600;
+      font-size: .95rem;
+      box-shadow: 0 4px 20px rgba(99,102,241,.4);
+      transition: var(--transition);
+      display: inline-flex;
+      align-items: center;
+      gap: .5rem;
+      text-decoration: none;
+    }
+
+    .btn-primary-custom:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 28px rgba(99,102,241,.5);
+      color: #fff;
+    }
+
+    .btn-outline-custom {
+      background: transparent;
+      border: 1.5px solid var(--border);
+      color: var(--text-muted);
+      padding: .85rem 1.75rem;
+      border-radius: var(--radius-sm);
+      font-weight: 600;
+      font-size: .95rem;
+      transition: var(--transition);
+      display: inline-flex;
+      align-items: center;
+      gap: .5rem;
+      text-decoration: none;
+    }
+
+    .btn-outline-custom:hover {
+      border-color: var(--primary);
+      color: var(--primary);
+      background: var(--primary-light);
+    }
+
+    .hero-stats {
+      display: flex;
+      gap: 2rem;
+      margin-top: 3rem;
+      flex-wrap: wrap;
+    }
+
+    .hero-stat { display: flex; flex-direction: column; }
+
+    .hero-stat-num {
+      font-size: 1.6rem;
+      font-weight: 800;
+      color: var(--primary);
+    }
+
+    .hero-stat-label {
+      font-size: .78rem;
+      color: var(--text-muted);
+      font-weight: 500;
+    }
+
+    .hero-visual {
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .hero-card-float {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-lg);
+      padding: 1.5rem;
+      width: 100%;
+      max-width: 340px;
+    }
+
+    .hero-card-float .chart-row {
+      display: flex;
+      align-items: flex-end;
+      gap: 8px;
+      height: 80px;
+      margin: 1rem 0;
+    }
+
+    .chart-bar {
+      flex: 1;
+      border-radius: 4px 4px 0 0;
+      transition: height .5s ease;
+    }
+
+    .float-badge {
+      position: absolute;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: .6rem 1rem;
+      display: flex;
+      align-items: center;
+      gap: .5rem;
+      font-size: .78rem;
+      font-weight: 600;
+      box-shadow: var(--shadow-md);
+      white-space: nowrap;
+    }
+
+    .float-badge.top-right { top: -12px; right: -20px; color: var(--success); }
+    .float-badge.bottom-left { bottom: 10px; left: -24px; color: var(--primary); }
+
+    /* =============================================
+       SECTION COMMON
+    ============================================= */
+    .section { padding: 5rem 0; }
+    .section-alt { background: var(--surface-2); }
+
+    .section-label {
+      font-size: .78rem;
+      font-weight: 700;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      color: var(--primary);
+      margin-bottom: .75rem;
+    }
+
+    .section-title {
+      font-size: clamp(1.6rem, 3vw, 2.2rem);
+      font-weight: 800;
+      line-height: 1.25;
+      color: var(--text-primary);
+      margin-bottom: 1rem;
+    }
+
+    .section-sub {
+      font-size: 1rem;
+      color: var(--text-muted);
+      line-height: 1.7;
+      max-width: 560px;
+    }
+
+    /* =============================================
+       ANALYZER FORM
+    ============================================= */
+    #analyzer { padding: 5rem 0; }
+
+    .form-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-md);
+      padding: 2.25rem;
+      transition: var(--transition);
+    }
+
+    .form-card:hover { box-shadow: var(--shadow-lg); }
+
+    .form-card .card-icon {
+      width: 48px; height: 48px;
+      background: var(--primary-light);
+      color: var(--primary);
+      border-radius: var(--radius-sm);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.3rem;
+      margin-bottom: 1rem;
+    }
+
+    .form-card h5 {
+      font-weight: 700;
+      color: var(--text-primary);
+      font-size: 1.05rem;
+      margin-bottom: .25rem;
+    }
+
+    .form-card p.sub {
+      font-size: .85rem;
+      color: var(--text-muted);
+      margin-bottom: 1.25rem;
+    }
+
+    .form-label {
+      font-weight: 600;
+      font-size: .875rem;
+      color: var(--text-primary);
+      margin-bottom: .5rem;
+    }
+
+    .form-control, .form-select {
+      background: var(--bg);
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius-sm);
+      color: var(--text-primary);
+      font-size: .9rem;
+      padding: .7rem 1rem;
+      transition: var(--transition);
+    }
+
+    .form-control:focus, .form-select:focus {
+      background: var(--surface);
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(99,102,241,.15);
+      color: var(--text-primary);
+      outline: none;
+    }
+
+    .form-control::placeholder { color: var(--text-muted); }
+
+    .radio-group {
+      display: flex;
+      gap: .75rem;
+      flex-wrap: wrap;
+    }
+
+    .radio-option {
+      flex: 1;
+      min-width: 90px;
+    }
+
+    .radio-option input[type="radio"] { display: none; }
+
+    .radio-option label {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: .4rem;
+      padding: .55rem 1rem;
+      border: 1.5px solid var(--border);
+      border-radius: 50px;
+      font-size: .85rem;
+      font-weight: 500;
+      color: var(--text-muted);
+      cursor: pointer;
+      transition: var(--transition);
+      white-space: nowrap;
+    }
+
+    .radio-option input:checked + label {
+      border-color: var(--primary);
+      background: var(--primary-light);
+      color: var(--primary);
+    }
+
+    .radio-option label:hover { border-color: var(--primary); color: var(--primary); }
+
+    .question-item {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 1.2rem 1.5rem;
+      margin-bottom: .875rem;
+      transition: var(--transition);
+    }
+
+    .question-item:hover { border-color: var(--primary); }
+
+    .question-item .q-label {
+      font-size: .9rem;
+      font-weight: 600;
+      color: var(--text-primary);
+      margin-bottom: .875rem;
+      display: flex;
+      align-items: flex-start;
+      gap: .5rem;
+    }
+
+    .q-number {
+      background: var(--primary);
+      color: #fff;
+      border-radius: 50%;
+      width: 22px; height: 22px;
+      font-size: .7rem;
+      font-weight: 700;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      margin-top: 1px;
+    }
+
+    .btn-analyze {
+      background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+      border: none;
+      color: #fff;
+      padding: .9rem 2.5rem;
+      border-radius: var(--radius-sm);
+      font-weight: 700;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: var(--transition);
+      display: inline-flex;
+      align-items: center;
+      gap: .6rem;
+      width: 100%;
+      justify-content: center;
+      box-shadow: 0 4px 20px rgba(99,102,241,.35);
+    }
+
+    .btn-analyze:hover:not(:disabled) {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 28px rgba(99,102,241,.5);
+    }
+
+    .btn-analyze:disabled { opacity: .7; cursor: not-allowed; transform: none; }
+
+    .btn-reset {
+      background: var(--surface-2);
+      border: 1.5px solid var(--border);
+      color: var(--text-muted);
+      padding: .7rem 1.75rem;
+      border-radius: var(--radius-sm);
+      font-weight: 600;
+      font-size: .9rem;
+      cursor: pointer;
+      transition: var(--transition);
+      display: inline-flex;
+      align-items: center;
+      gap: .5rem;
+    }
+
+    .btn-reset:hover { background: var(--border); color: var(--text-primary); }
+
+    /* =============================================
+       RESULTS SECTION
+    ============================================= */
+    #results { padding: 5rem 0; display: none; }
+
+    .score-ring-wrap {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 1.5rem;
+    }
+
+    .score-ring {
+      position: relative;
+      width: 160px; height: 160px;
+    }
+
+    .score-ring svg { transform: rotate(-90deg); }
+
+    .score-ring-center {
+      position: absolute; inset: 0;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+    }
+
+    .score-num {
+      font-size: 2.4rem;
+      font-weight: 800;
+      line-height: 1;
+      color: var(--text-primary);
+    }
+
+    .score-label {
+      font-size: .7rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: .08em;
+      color: var(--text-muted);
+      margin-top: 2px;
+    }
+
+    .level-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: .5rem;
+      padding: .5rem 1.25rem;
+      border-radius: 50px;
+      font-weight: 700;
+      font-size: .85rem;
+      margin-bottom: 1rem;
+    }
+
+    .level-badge.low    { background: #dcfce7; color: #16a34a; }
+    .level-badge.medium { background: #fef9c3; color: #a16207; }
+    .level-badge.high   { background: #fee2e2; color: #dc2626; }
+
+    [data-theme="dark"] .level-badge.low    { background: #14532d; color: #86efac; }
+    [data-theme="dark"] .level-badge.medium { background: #422006; color: #fde68a; }
+    [data-theme="dark"] .level-badge.high   { background: #450a0a; color: #fca5a5; }
+
+    .result-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-md);
+      padding: 2rem;
+      text-align: center;
+      height: 100%;
+    }
+
+    .progress-wrap {
+      background: var(--surface-2);
+      border-radius: 50px;
+      height: 12px;
+      overflow: hidden;
+      margin: 1rem 0;
+    }
+
+    .progress-bar-custom {
+      height: 100%;
+      border-radius: 50px;
+      transition: width 1.5s cubic-bezier(.4,0,.2,1);
+      width: 0;
+    }
+
+    .feedback-box {
+      background: var(--bg);
+      border-left: 4px solid var(--primary);
+      border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+      padding: 1.25rem 1.5rem;
+      font-size: .9rem;
+      color: var(--text-muted);
+      line-height: 1.7;
+    }
+
+    /* =============================================
+       RECOMMENDATION CARDS
+    ============================================= */
+    .rec-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 1.75rem;
+      transition: var(--transition);
+      height: 100%;
+    }
+
+    .rec-card:hover {
+      transform: translateY(-4px);
+      box-shadow: var(--shadow-lg);
+      border-color: var(--primary);
+    }
+
+    .rec-icon {
+      width: 52px; height: 52px;
+      border-radius: var(--radius-sm);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.4rem;
+      margin-bottom: 1.1rem;
+    }
+
+    .rec-card h6 {
+      font-weight: 700;
+      font-size: .95rem;
+      color: var(--text-primary);
+      margin-bottom: .5rem;
+    }
+
+    .rec-card p {
+      font-size: .85rem;
+      color: var(--text-muted);
+      line-height: 1.65;
+      margin: 0;
+    }
+
+    /* =============================================
+       ABOUT SECTION
+    ============================================= */
+    .stat-pill {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 50px;
+      padding: .5rem 1.25rem;
+      font-size: .85rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      display: inline-flex;
+      align-items: center;
+      gap: .5rem;
+      margin: .25rem;
+    }
+
+    .stat-pill i { color: var(--primary); }
+
+    .info-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 1.75rem;
+      display: flex;
+      gap: 1rem;
+      align-items: flex-start;
+      transition: var(--transition);
+      margin-bottom: 1rem;
+    }
+
+    .info-card:hover { box-shadow: var(--shadow-md); }
+
+    .info-card .info-icon {
+      width: 44px; height: 44px; flex-shrink: 0;
+      background: var(--primary-light);
+      color: var(--primary);
+      border-radius: var(--radius-sm);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.2rem;
+    }
+
+    .info-card h6 {
+      font-weight: 700;
+      font-size: .92rem;
+      color: var(--text-primary);
+      margin-bottom: .3rem;
+    }
+
+    .info-card p {
+      font-size: .845rem;
+      color: var(--text-muted);
+      line-height: 1.65;
+      margin: 0;
+    }
+
+    /* =============================================
+       FOOTER
+    ============================================= */
+    footer {
+      background: var(--surface);
+      border-top: 1px solid var(--border);
+      padding: 2.5rem 0;
+    }
+
+    footer .brand-name {
+      font-weight: 800;
+      font-size: 1rem;
+      color: var(--primary);
+    }
+
+    footer p {
+      font-size: .82rem;
+      color: var(--text-muted);
+      margin: 0;
+    }
+
+    footer .footer-links a {
+      color: var(--text-muted);
+      font-size: .82rem;
+      text-decoration: none;
+      transition: color .2s;
+    }
+
+    footer .footer-links a:hover { color: var(--primary); }
+
+    /* =============================================
+       SCROLL TO TOP
+    ============================================= */
+    #scrollTop {
+      position: fixed;
+      bottom: 1.75rem;
+      right: 1.75rem;
+      width: 44px; height: 44px;
+      background: var(--primary);
+      color: #fff;
+      border: none;
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.1rem;
+      cursor: pointer;
+      box-shadow: var(--shadow-md);
+      opacity: 0;
+      transform: translateY(12px);
+      transition: var(--transition);
+      z-index: 999;
+    }
+
+    #scrollTop.visible { opacity: 1; transform: translateY(0); }
+    #scrollTop:hover { background: var(--primary-dark); transform: translateY(-2px); }
+
+    /* =============================================
+       MODAL
+    ============================================= */
+    .modal-content {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      color: var(--text-primary);
+    }
+
+    .modal-header {
+      border-bottom: 1px solid var(--border);
+      padding: 1.5rem 1.75rem;
+    }
+
+    .modal-footer {
+      border-top: 1px solid var(--border);
+      padding: 1.25rem 1.75rem;
+    }
+
+    .modal-title { font-weight: 700; font-size: 1.1rem; }
+
+    .breakdown-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: .7rem 0;
+      border-bottom: 1px solid var(--border);
+      font-size: .875rem;
+    }
+
+    .breakdown-row:last-child { border-bottom: none; }
+    .breakdown-row .label { color: var(--text-muted); }
+    .breakdown-row .value { font-weight: 700; color: var(--primary); }
+
+    .motivational {
+      background: linear-gradient(135deg, var(--primary-light), rgba(6,182,212,.1));
+      border: 1px solid var(--primary);
+      border-radius: var(--radius-md);
+      padding: 1.25rem 1.5rem;
+      font-size: .875rem;
+      color: var(--text-muted);
+      line-height: 1.7;
+      margin-top: 1rem;
+    }
+
+    /* =============================================
+       ANIMATIONS
+    ============================================= */
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(24px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes pulse-dot {
+      0%, 100% { opacity: 1; }
+      50%       { opacity: .4; }
+    }
+
+    .fade-in-up { animation: fadeInUp .6s ease both; }
+    .delay-1 { animation-delay: .1s; }
+    .delay-2 { animation-delay: .2s; }
+    .delay-3 { animation-delay: .3s; }
+    .delay-4 { animation-delay: .4s; }
+
+    .pulse-dot {
+      display: inline-block;
+      width: 8px; height: 8px;
+      background: var(--success);
+      border-radius: 50%;
+      animation: pulse-dot 1.5s ease-in-out infinite;
+    }
+
+    /* Spinner */
+    .spinner {
+      display: inline-block;
+      width: 18px; height: 18px;
+      border: 2px solid rgba(255,255,255,.4);
+      border-top-color: #fff;
+      border-radius: 50%;
+      animation: spin .7s linear infinite;
+    }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* =============================================
+       RESPONSIVE TWEAKS
+    ============================================= */
+    @media (max-width: 767px) {
+      .hero-visual { margin-top: 3rem; }
+      .hero-stats { gap: 1.25rem; }
+      .float-badge.bottom-left { display: none; }
+      .form-card { padding: 1.5rem; }
+      .result-card { margin-bottom: 1rem; }
+    }
+
+    @media (max-width: 575px) {
+      .hero-title { font-size: 1.8rem; }
+      .radio-option label { font-size: .78rem; padding: .45rem .65rem; }
+    }
+  </style>
 </head>
 <body>
 
-    <nav class="py-4">
-        <div class="container d-flex justify-content-between align-items-center">
-            <div class="d-flex align-items-center" onclick="showPage('homePage')" style="cursor: pointer;">
-                <i class="bi bi-cpu-fill me-2 fs-3 text-purple" style="color: var(--accent-purple);"></i>
-                <span class="brand-text fs-4">NeuroFilter</span>
-            </div>
-            <div class="d-none d-md-flex gap-3">
-                <button class="nav-btn" onclick="showPage('homePage')">Dashboard</button>
-                <button class="nav-btn" onclick="showPage('analyzerPage')">Analyzer</button>
-                <button class="nav-btn" onclick="showPage('detoxPage')">Detox</button>
-                <button class="nav-btn" onclick="showPage('aboutPage')">Insights</button>
-            </div>
+<!-- =============================================
+     NAVBAR
+============================================= -->
+<nav class="navbar navbar-expand-lg sticky-top" id="mainNav">
+  <div class="container">
+    <a class="navbar-brand" href="#home">
+      <div class="brand-icon"><i class="bi bi-wifi"></i></div>
+      NeuroFilter
+    </a>
+
+    <button class="navbar-toggler border-0 p-1" type="button" data-bs-toggle="collapse" data-bs-target="#navMenu">
+      <i class="bi bi-list fs-4" style="color: var(--text-muted);"></i>
+    </button>
+
+    <div class="collapse navbar-collapse" id="navMenu">
+      <ul class="navbar-nav ms-auto align-items-lg-center gap-1">
+        <li class="nav-item"><a class="nav-link" href="#home">Home</a></li>
+        <li class="nav-item"><a class="nav-link" href="#analyzer">Analyzer</a></li>
+        <li class="nav-item"><a class="nav-link" href="#results">Results</a></li>
+        <li class="nav-item"><a class="nav-link" href="#about">About</a></li>
+        <li class="nav-item ms-lg-2">
+          <button class="btn-theme" id="themeToggle" title="Toggle dark mode">
+            <i class="bi bi-moon-stars-fill" id="themeIcon"></i>
+          </button>
+        </li>
+      </ul>
+    </div>
+  </div>
+</nav>
+
+<!-- =============================================
+     HERO SECTION
+============================================= -->
+<section id="home">
+  <div class="hero-bg"></div>
+  <div class="hero-dots"></div>
+  <div class="hero-blob hero-blob-1"></div>
+  <div class="hero-blob hero-blob-2"></div>
+
+  <div class="container position-relative">
+    <div class="row align-items-center g-5">
+
+      <!-- Left: Text -->
+      <div class="col-lg-6">
+        <div class="hero-badge fade-in-up">
+          <span class="pulse-dot"></span>
+          AI-Powered Analysis Tool
         </div>
-    </nav>
 
-    <main class="container py-5">
-        
-        <section id="homePage" class="page-content active-page">
-            <div class="row align-items-center py-5">
-                <div class="col-lg-7">
-                    <p class="dev-signature mb-2">Developed by Payal</p>
-                    <h1 class="display-2 fw-bold text-white mb-4">Neural Data <br><span style="color: var(--accent-purple);">Refined.</span></h1>
-                    <p class="lead mb-5 text-secondary" style="max-width: 500px;">Optimizing digital consumption through advanced behavioral metrics and intentional recovery.</p>
-                    <div class="d-flex gap-3">
-                        <button class="btn btn-neuro btn-lg px-4" onclick="showPage('analyzerPage')">Start Analysis</button>
-                        <button class="btn btn-outline-light btn-lg px-4" onclick="showPage('aboutPage')">Science Mode</button>
-                    </div>
-                </div>
-            </div>
-        </section>
+        <h1 class="hero-title fade-in-up delay-1">
+          Understand Your<br>
+          <span class="highlight">Digital Habits</span><br>
+          & Take Control
+        </h1>
 
-        <section id="analyzerPage" class="page-content">
-            <div class="row justify-content-center">
-                <div class="col-lg-6">
-                    <div class="glass-card">
-                        <h2 class="text-white mb-4">Assessment Input</h2>
-                        <form id="usageForm">
-                            <div class="mb-4">
-                                <label class="small fw-bold text-purple mb-2">DAILY ONLINE ACTIVITY (HOURS)</label>
-                                <input type="number" class="form-control" id="hours" placeholder="e.g. 8" required>
-                            </div>
-                            <div class="mb-4">
-                                <label class="small fw-bold text-purple mb-3">NEURAL IMPACT CHECKS</label>
-                                <div class="form-check mb-3">
-                                    <input class="form-check-input" type="checkbox" id="check1">
-                                    <label class="form-check-label text-white ms-2">Constant "Checking" habit (FOMO)</label>
-                                </div>
-                                <div class="form-check mb-3">
-                                    <input class="form-check-input" type="checkbox" id="check2">
-                                    <label class="form-check-label text-white ms-2">Sleep latency due to screen exposure</label>
-                                </div>
-                            </div>
-                            <button type="button" class="btn btn-neuro w-100 py-3 mt-3" onclick="calculateScore()">Analyze Profile</button>
-                        </form>
-                    </div>
-                </div>
-            </div>
-        </section>
+        <p class="hero-sub fade-in-up delay-2">
+          Answer a few questions and instantly discover your internet addiction level — with personalized insights, visual scoring, and expert-backed recommendations.
+        </p>
 
-        <section id="aboutPage" class="page-content">
-            <div class="row justify-content-center">
-                <div class="col-lg-8">
-                    <div class="glass-card mb-4">
-                        <span class="insight-label">Biological Impact</span>
-                        <h3 class="text-white mt-2">The Dopamine Loop</h3>
-                        <p class="text-secondary">Digital platforms use variable reward schedules to trigger dopamine release, creating a cycle of dependency similar to chemical addiction.</p>
-                    </div>
-                    <div class="glass-card mb-4">
-                        <span class="insight-label">Circadian Rhythm</span>
-                        <h3 class="text-white mt-2">Blue Light Interference</h3>
-                        <p class="text-secondary">Exposure to 450nm-495nm wavelengths (blue light) suppresses melatonin production, shifting your sleep-wake cycle and reducing REM quality.</p>
-                    </div>
-                    <div class="glass-card">
-                        <span class="insight-label">Architecture</span>
-                        <h3 class="text-white mt-2">NeuroFilter Project</h3>
-                        <p class="text-secondary">Built by <strong>Payal</strong>, this project utilizes a custom scoring algorithm to provide real-time digital health diagnostics.</p>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <section id="detoxPage" class="page-content">
-            <div class="row g-4 text-center">
-                <div class="col-md-4"><div class="glass-card h-100"><i class="bi bi-shield-lock-fill fs-1 text-purple mb-3"></i><h4 class="text-white">App Lock</h4><p class="small">Hard-limit social apps to 30 mins/day.</p></div></div>
-                <div class="col-md-4"><div class="glass-card h-100"><i class="bi bi-book-half fs-1 text-purple mb-3"></i><h4 class="text-white">Analog Read</h4><p class="small">Replace scrolling with 20 pages of a physical book.</p></div></div>
-                <div class="col-md-4"><div class="glass-card h-100"><i class="bi bi-sun-fill fs-1 text-purple mb-3"></i><h4 class="text-white">Sky Exposure</h4><p class="small">View natural sunlight within 30 mins of waking.</p></div></div>
-            </div>
-            <div class="mt-5 text-center"><button class="btn btn-outline-light" onclick="showPage('homePage')">Return to Dashboard</button></div>
-        </section>
-
-        <section id="resultPage" class="page-content text-center">
-            <div class="row justify-content-center">
-                <div class="col-lg-5">
-                    <div class="glass-card">
-                        <h6 class="text-purple fw-bold mb-4">NEURAL DIAGNOSTIC RESULT</h6>
-                        <div class="display-1 fw-bold text-white mb-3" id="scoreValue">0</div>
-                        <h3 id="statusLabel" class="text-white">Level</h3>
-                        <p id="feedback" class="text-secondary mb-5"></p>
-                        <div class="d-grid gap-3">
-                            <button class="btn btn-neuro btn-lg" onclick="showPage('detoxPage')">View Detox Protocol</button>
-                            <button class="btn btn-link text-white" onclick="showPage('homePage')">Dashboard Home</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-    </main>
-
-    <footer>
-        <div class="container">
-            <p class="text-muted small">NeuroFilter Diagnostic Engine © 2026</p>
-            <p class="fw-bold" style="color: var(--accent-purple); font-size: 0.9rem;">Engineered by Payal</p>
+        <div class="d-flex flex-wrap gap-3 fade-in-up delay-3">
+          <a href="#analyzer" class="btn-primary-custom">
+            <i class="bi bi-play-circle-fill"></i> Start Analysis
+          </a>
+          <a href="#about" class="btn-outline-custom">
+            <i class="bi bi-book"></i> Learn More
+          </a>
         </div>
-    </footer>
 
-    <script>
-        function showPage(pageId) {
-            document.querySelectorAll('.page-content').forEach(p => p.classList.remove('active-page'));
-            document.getElementById(pageId).classList.add('active-page');
-            window.scrollTo(0,0);
-        }
+        <div class="hero-stats fade-in-up delay-4">
+          <div class="hero-stat">
+            <span class="hero-stat-num">4.8K+</span>
+            <span class="hero-stat-label">Tests Taken</span>
+          </div>
+          <div class="hero-stat">
+            <span class="hero-stat-num">92%</span>
+            <span class="hero-stat-label">Accuracy Rate</span>
+          </div>
+          <div class="hero-stat">
+            <span class="hero-stat-num">3 min</span>
+            <span class="hero-stat-label">To Complete</span>
+          </div>
+        </div>
+      </div>
 
-        function calculateScore() {
-            const h = parseInt(document.getElementById('hours').value) || 0;
-            const c1 = document.getElementById('check1').checked;
-            const c2 = document.getElementById('check2').checked;
+      <!-- Right: Visual card -->
+      <div class="col-lg-6 hero-visual">
+        <div style="position: relative; display: inline-block; width: 100%; max-width: 380px; margin: 0 auto; display: flex; justify-content: center;">
+          <div class="hero-card-float">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:.5rem;">
+              <span style="font-weight:700; font-size:.9rem; color:var(--text-primary);">Weekly Usage</span>
+              <span style="font-size:.75rem; color:var(--text-muted);">hrs/day</span>
+            </div>
+            <div class="chart-row" id="heroChart">
+              <!-- bars injected by JS -->
+            </div>
+            <div style="display:flex; justify-content:space-between; font-size:.72rem; color:var(--text-muted);">
+              <span>Mon</span><span>Tue</span><span>Wed</span><span>Thu</span><span>Fri</span><span>Sat</span><span>Sun</span>
+            </div>
+            <div style="margin-top:1.25rem; padding-top:1rem; border-top:1px solid var(--border);">
+              <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:.6rem;">
+                <span style="font-size:.8rem; font-weight:600; color:var(--text-muted);">Addiction Risk</span>
+                <span style="font-size:.8rem; font-weight:700; color:var(--warning);">Medium</span>
+              </div>
+              <div class="progress-wrap" style="height:8px;">
+                <div class="progress-bar-custom" id="heroProgress" style="background: linear-gradient(90deg,#22c55e,#f59e0b); width:0;"></div>
+              </div>
+              <div style="font-size:.72rem; color:var(--text-muted); margin-top:.4rem;">Score: 58 / 100</div>
+            </div>
+          </div>
 
-            let score = h < 3 ? 15 : (h < 6 ? 45 : 80);
-            if (c1) score += 10;
-            if (c2) score += 10;
-            score = Math.min(score, 100);
+          <div class="float-badge top-right">
+            <i class="bi bi-shield-check" style="font-size:14px;"></i> Analysis Ready
+          </div>
+          <div class="float-badge bottom-left">
+            <i class="bi bi-graph-up" style="font-size:14px;"></i> Real-time scoring
+          </div>
+        </div>
+      </div>
 
-            document.getElementById('scoreValue').innerText = score;
-            const label = document.getElementById('statusLabel');
-            const feedback = document.getElementById('feedback');
+    </div>
+  </div>
+</section>
 
-            if (score < 40) {
-                label.innerText = "System Optimized";
-                feedback.innerText = "Your digital habits are within professional healthy parameters.";
-            } else if (score < 75) {
-                label.innerText = "Fragile State";
-                feedback.innerText = "Moderate interference detected. Your cognitive load is high.";
-            } else {
-                label.innerText = "Neural Overload";
-                feedback.innerText = "Critical dependency detected. Strategic disconnection is required.";
-            }
-            showPage('resultPage');
-        }
-    </script>
+<!-- =============================================
+     ANALYZER FORM SECTION
+============================================= -->
+<section id="analyzer" class="section section-alt">
+  <div class="container">
+
+    <div class="text-center mb-5">
+      <p class="section-label"><i class="bi bi-cpu me-1"></i> Smart Analyzer</p>
+      <h2 class="section-title">Take Your Internet Usage Test</h2>
+      <p class="section-sub mx-auto">Complete the questions below honestly for the most accurate assessment of your digital wellness.</p>
+    </div>
+
+    <form id="analyzerForm" novalidate>
+      <div class="row g-4">
+
+        <!-- Card 1: Daily Usage -->
+        <div class="col-lg-6">
+          <div class="form-card h-100">
+            <div class="card-icon"><i class="bi bi-clock-history"></i></div>
+            <h5>Daily Usage</h5>
+            <p class="sub">Tell us how much time you spend online on an average day.</p>
+
+            <div class="mb-3">
+              <label class="form-label" for="hoursInput">
+                <i class="bi bi-hourglass-split me-1"></i> Daily Internet Usage (hours)
+              </label>
+              <input type="number" class="form-control" id="hoursInput"
+                     placeholder="e.g. 5" min="0" max="24" step="0.5" required />
+              <div class="invalid-feedback">Please enter your daily internet usage in hours.</div>
+              <div class="form-text mt-1" style="font-size:.78rem; color:var(--text-muted);">Include all activities: social media, streaming, gaming, work/study, browsing.</div>
+            </div>
+
+            <div class="mb-1">
+              <label class="form-label"><i class="bi bi-devices me-1"></i> Primary Device</label>
+              <select class="form-select" id="deviceType">
+                <option value="">Select device...</option>
+                <option value="phone">Smartphone</option>
+                <option value="laptop">Laptop / PC</option>
+                <option value="tablet">Tablet</option>
+                <option value="mixed">Multiple devices</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <!-- Card 2: Behavioral Questions -->
+        <div class="col-lg-6">
+          <div class="form-card h-100">
+            <div class="card-icon"><i class="bi bi-clipboard2-pulse"></i></div>
+            <h5>Behavioral Assessment</h5>
+            <p class="sub">Answer honestly — there are no right or wrong answers.</p>
+
+            <!-- Q1 -->
+            <div class="question-item">
+              <div class="q-label">
+                <span class="q-number">1</span>
+                Do you use the internet before falling asleep?
+              </div>
+              <div class="radio-group">
+                <div class="radio-option">
+                  <input type="radio" name="q1" id="q1n" value="never" required />
+                  <label for="q1n"><i class="bi bi-x-circle"></i> Never</label>
+                </div>
+                <div class="radio-option">
+                  <input type="radio" name="q1" id="q1s" value="sometimes" />
+                  <label for="q1s"><i class="bi bi-dash-circle"></i> Sometimes</label>
+                </div>
+                <div class="radio-option">
+                  <input type="radio" name="q1" id="q1a" value="always" />
+                  <label for="q1a"><i class="bi bi-check-circle"></i> Always</label>
+                </div>
+              </div>
+            </div>
+
+            <!-- Q2 -->
+            <div class="question-item">
+              <div class="q-label">
+                <span class="q-number">2</span>
+                Do you feel anxious or restless without internet access?
+              </div>
+              <div class="radio-group">
+                <div class="radio-option">
+                  <input type="radio" name="q2" id="q2n" value="never" required />
+                  <label for="q2n"><i class="bi bi-x-circle"></i> Never</label>
+                </div>
+                <div class="radio-option">
+                  <input type="radio" name="q2" id="q2s" value="sometimes" />
+                  <label for="q2s"><i class="bi bi-dash-circle"></i> Sometimes</label>
+                </div>
+                <div class="radio-option">
+                  <input type="radio" name="q2" id="q2a" value="always" />
+                  <label for="q2a"><i class="bi bi-check-circle"></i> Always</label>
+                </div>
+              </div>
+            </div>
+
+            <!-- Q3 -->
+            <div class="question-item">
+              <div class="q-label">
+                <span class="q-number">3</span>
+                Do you lose track of time while browsing online?
+              </div>
+              <div class="radio-group">
+                <div class="radio-option">
+                  <input type="radio" name="q3" id="q3n" value="never" required />
+                  <label for="q3n"><i class="bi bi-x-circle"></i> Never</label>
+                </div>
+                <div class="radio-option">
+                  <input type="radio" name="q3" id="q3s" value="sometimes" />
+                  <label for="q3s"><i class="bi bi-dash-circle"></i> Sometimes</label>
+                </div>
+                <div class="radio-option">
+                  <input type="radio" name="q3" id="q3a" value="always" />
+                  <label for="q3a"><i class="bi bi-check-circle"></i> Always</label>
+                </div>
+              </div>
+            </div>
+
+            <!-- Q4 -->
+            <div class="question-item">
+              <div class="q-label">
+                <span class="q-number">4</span>
+                Do you prefer online interaction over face-to-face contact?
+              </div>
+              <div class="radio-group">
+                <div class="radio-option">
+                  <input type="radio" name="q4" id="q4n" value="never" required />
+                  <label for="q4n"><i class="bi bi-x-circle"></i> Never</label>
+                </div>
+                <div class="radio-option">
+                  <input type="radio" name="q4" id="q4s" value="sometimes" />
+                  <label for="q4s"><i class="bi bi-dash-circle"></i> Sometimes</label>
+                </div>
+                <div class="radio-option">
+                  <input type="radio" name="q4" id="q4a" value="always" />
+                  <label for="q4a"><i class="bi bi-check-circle"></i> Always</label>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+      </div><!-- /row -->
+
+      <!-- Submit Row -->
+      <div class="row justify-content-center mt-4">
+        <div class="col-lg-5 col-md-7">
+          <button type="submit" class="btn-analyze mb-3" id="analyzeBtn">
+            <i class="bi bi-lightning-charge-fill"></i> Analyze My Usage
+          </button>
+          <div class="text-center">
+            <button type="button" class="btn-reset" id="resetBtn">
+              <i class="bi bi-arrow-counterclockwise"></i> Reset Form
+            </button>
+          </div>
+        </div>
+      </div>
+
+    </form>
+  </div>
+</section>
+
+<!-- =============================================
+     RESULTS SECTION
+============================================= -->
+<section id="results">
+  <div class="container">
+
+    <div class="text-center mb-5">
+      <p class="section-label"><i class="bi bi-bar-chart-fill me-1"></i> Your Results</p>
+      <h2 class="section-title">Analysis Complete</h2>
+      <p class="section-sub mx-auto" id="resultSubtext">Here's a breakdown of your internet usage habits and what it means for your wellbeing.</p>
+    </div>
+
+    <div class="row g-4 mb-5 align-items-stretch">
+
+      <!-- Score Ring Card -->
+      <div class="col-md-4">
+        <div class="result-card">
+          <div class="score-ring-wrap">
+            <div class="score-ring">
+              <svg width="160" height="160" viewBox="0 0 160 160">
+                <circle cx="80" cy="80" r="68" fill="none" stroke="var(--border)" stroke-width="14"/>
+                <circle id="scoreArc" cx="80" cy="80" r="68" fill="none"
+                        stroke="#6366f1" stroke-width="14"
+                        stroke-linecap="round"
+                        stroke-dasharray="427" stroke-dashoffset="427"
+                        style="transition: stroke-dashoffset 1.5s cubic-bezier(.4,0,.2,1), stroke .5s;"/>
+              </svg>
+              <div class="score-ring-center">
+                <div class="score-num" id="scoreDisplay">0</div>
+                <div class="score-label">/ 100</div>
+              </div>
+            </div>
+          </div>
+          <div class="mb-2" id="levelBadgeWrap">
+            <span class="level-badge low" id="levelBadge">
+              <i class="bi bi-emoji-smile-fill"></i> Low Risk
+            </span>
+          </div>
+          <div class="progress-wrap">
+            <div class="progress-bar-custom" id="mainProgressBar"></div>
+          </div>
+          <p style="font-size:.8rem; color:var(--text-muted); margin-top:.5rem;" id="progressLabel">0 / 100 points</p>
+        </div>
+      </div>
+
+      <!-- Feedback Card -->
+      <div class="col-md-8">
+        <div class="result-card text-start">
+          <h5 style="font-weight:700; margin-bottom:1rem; color:var(--text-primary);">
+            <i class="bi bi-chat-square-text me-2" style="color:var(--primary);"></i>Personalized Feedback
+          </h5>
+          <div class="feedback-box" id="feedbackText">
+            Your results will appear here after analysis.
+          </div>
+
+          <div class="row g-3 mt-3" id="miniStats">
+            <div class="col-4">
+              <div style="text-align:center; background:var(--bg); border-radius:var(--radius-sm); padding:.875rem .5rem; border:1px solid var(--border);">
+                <div style="font-size:1.3rem; font-weight:800; color:var(--primary);" id="statHours">—</div>
+                <div style="font-size:.72rem; color:var(--text-muted); font-weight:600;">Daily Hours</div>
+              </div>
+            </div>
+            <div class="col-4">
+              <div style="text-align:center; background:var(--bg); border-radius:var(--radius-sm); padding:.875rem .5rem; border:1px solid var(--border);">
+                <div style="font-size:1.3rem; font-weight:800; color:var(--warning);" id="statRisks">—</div>
+                <div style="font-size:.72rem; color:var(--text-muted); font-weight:600;">Risk Behaviors</div>
+              </div>
+            </div>
+            <div class="col-4">
+              <div style="text-align:center; background:var(--bg); border-radius:var(--radius-sm); padding:.875rem .5rem; border:1px solid var(--border);">
+                <div style="font-size:1.3rem; font-weight:800; color:var(--success);" id="statLevel">—</div>
+                <div style="font-size:.72rem; color:var(--text-muted); font-weight:600;">Risk Level</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="mt-3 d-flex flex-wrap gap-2">
+            <button class="btn-primary-custom" style="padding:.65rem 1.5rem; font-size:.88rem;"
+                    data-bs-toggle="modal" data-bs-target="#reportModal" id="viewReportBtn">
+              <i class="bi bi-file-earmark-bar-graph"></i> View Detailed Report
+            </button>
+            <a href="#analyzer" class="btn-outline-custom" style="padding:.65rem 1.25rem; font-size:.88rem;">
+              <i class="bi bi-arrow-repeat"></i> Retake Test
+            </a>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Recommendations -->
+    <div class="text-center mb-4">
+      <p class="section-label"><i class="bi bi-lightbulb me-1"></i> Recommendations</p>
+      <h3 style="font-size:1.5rem; font-weight:800; color:var(--text-primary);">Personalized Suggestions</h3>
+    </div>
+
+    <div class="row g-4" id="recCards">
+      <!-- Injected by JS -->
+    </div>
+
+  </div>
+</section>
+
+<!-- =============================================
+     ABOUT SECTION
+============================================= -->
+<section id="about" class="section section-alt">
+  <div class="container">
+    <div class="row g-5 align-items-center">
+
+      <div class="col-lg-5">
+        <p class="section-label"><i class="bi bi-info-circle me-1"></i> About This Tool</p>
+        <h2 class="section-title">What Is Internet Addiction?</h2>
+        <p style="color:var(--text-muted); line-height:1.75; font-size:.95rem; margin-bottom:1.5rem;">
+          Internet addiction disorder (IAD) describes compulsive internet use that impairs daily life functions. Recognized by health professionals worldwide, it affects people of all ages and backgrounds.
+        </p>
+
+        <div class="mb-3">
+          <span class="stat-pill"><i class="bi bi-people-fill"></i> ~6% of the global population</span>
+          <span class="stat-pill"><i class="bi bi-phone-fill"></i> Avg. 6.5 hrs screen/day</span>
+          <span class="stat-pill"><i class="bi bi-heart-pulse-fill"></i> Linked to anxiety & depression</span>
+          <span class="stat-pill"><i class="bi bi-moon-fill"></i> Disrupts sleep in 73% of users</span>
+        </div>
+
+        <p style="font-size:.85rem; color:var(--text-muted); font-style:italic;">
+          This tool is for educational purposes and should not replace professional medical advice.
+        </p>
+      </div>
+
+      <div class="col-lg-7">
+        <div class="info-card">
+          <div class="info-icon"><i class="bi bi-exclamation-triangle-fill"></i></div>
+          <div>
+            <h6>Warning Signs to Watch For</h6>
+            <p>Spending increasing amounts of time online, failed attempts to reduce usage, neglecting personal relationships, and using the internet to escape negative emotions.</p>
+          </div>
+        </div>
+
+        <div class="info-card">
+          <div class="info-icon" style="background:rgba(6,182,212,.15); color:var(--accent);"><i class="bi bi-brain"></i></div>
+          <div>
+            <h6>The Science Behind Addiction</h6>
+            <p>Social media and apps exploit dopamine reward loops — notifications, likes, and infinite scroll are engineered to maximize engagement, creating compulsive checking behaviors.</p>
+          </div>
+        </div>
+
+        <div class="info-card">
+          <div class="info-icon" style="background:#dcfce7; color:#16a34a;"><i class="bi bi-heart-fill"></i></div>
+          <div>
+            <h6>Recovery Is Possible</h6>
+            <p>With awareness, structured limits, and healthy offline alternatives, most people can significantly improve their relationship with technology within 30–60 days.</p>
+          </div>
+        </div>
+
+        <div class="info-card">
+          <div class="info-icon" style="background:#fef9c3; color:#a16207;"><i class="bi bi-shield-check-fill"></i></div>
+          <div>
+            <h6>How NetSense Helps</h6>
+            <p>Our evidence-informed scoring model evaluates both time-based and behavioral indicators, giving you a clearer, more holistic picture of your digital wellness profile.</p>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- =============================================
+     FOOTER
+============================================= -->
+<footer>
+  <div class="container">
+    <div class="row align-items-center g-3">
+      <div class="col-md-4">
+        <div class="d-flex align-items-center gap-2 mb-1">
+          <div class="brand-icon" style="width:28px;height:28px;font-size:.85rem; background:linear-gradient(135deg,var(--primary),var(--accent)); border-radius:.4rem; display:flex;align-items:center;justify-content:center;color:#fff;">
+            <i class="bi bi-wifi"></i>
+          </div>
+          <span class="brand-name">NeuroFilter</span>
+        </div>
+        <p>Smart Internet Usage Analyzer — A student project for digital wellness education.</p>
+        <p style="margin-top:.4rem;">
+          <i class="bi bi-person-badge-fill me-1" style="color:var(--primary);"></i>
+          Developed by <strong style="color:var(--text-primary);">Payal</strong> &nbsp;&bull;&nbsp; Roll No: <strong style="color:var(--text-primary);">B0241032</strong>
+        </p>
+      </div>
+      <div class="col-md-4 text-md-center">
+        <div class="footer-links d-flex justify-content-md-center gap-3">
+          <a href="#home">Home</a>
+          <a href="#analyzer">Analyzer</a>
+          <a href="#results">Results</a>
+          <a href="#about">About</a>
+        </div>
+      </div>
+      <div class="col-md-4 text-md-end">
+        <p>Built with <i class="bi bi-heart-fill" style="color:#ef4444;"></i> using Bootstrap 5</p>
+        <p style="margin-top:.25rem;">© 2025 NeuroFilter Project. Educational use only.</p>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<!-- Scroll to Top Button -->
+<button id="scrollTop" aria-label="Scroll to top">
+  <i class="bi bi-arrow-up"></i>
+</button>
+
+<!-- =============================================
+     DETAILED REPORT MODAL
+============================================= -->
+<div class="modal fade" id="reportModal" tabindex="-1" aria-labelledby="reportModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="reportModalLabel">
+          <i class="bi bi-file-earmark-bar-graph me-2" style="color:var(--primary);"></i>Detailed Analysis Report
+        </h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" style="filter: var(--bs-btn-close-filter, none);"></button>
+      </div>
+      <div class="modal-body p-4">
+
+        <!-- Score Banner -->
+        <div style="background:linear-gradient(135deg,var(--primary-light),rgba(6,182,212,.1)); border:1px solid var(--primary); border-radius:var(--radius-md); padding:1.25rem 1.5rem; margin-bottom:1.5rem; display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:1rem;">
+          <div>
+            <div style="font-size:.78rem; font-weight:600; color:var(--text-muted); text-transform:uppercase; letter-spacing:.08em;">Total Score</div>
+            <div style="font-size:2.2rem; font-weight:800; color:var(--primary);" id="modalScore">—</div>
+          </div>
+          <div id="modalLevelWrap">
+            <span class="level-badge low" id="modalLevel">—</span>
+          </div>
+        </div>
+
+        <!-- Breakdown -->
+        <h6 style="font-weight:700; margin-bottom:.75rem; font-size:.9rem; color:var(--text-muted); text-transform:uppercase; letter-spacing:.06em;">Score Breakdown</h6>
+        <div id="breakdownList"></div>
+
+        <!-- Advice Summary -->
+        <h6 style="font-weight:700; margin:1.25rem 0 .75rem; font-size:.9rem; color:var(--text-muted); text-transform:uppercase; letter-spacing:.06em;">Advice Summary</h6>
+        <div id="modalAdvice" style="font-size:.875rem; color:var(--text-muted); line-height:1.7;"></div>
+
+        <!-- Motivational Message -->
+        <div class="motivational" id="modalMotivation"></div>
+
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn-reset" data-bs-dismiss="modal">
+          <i class="bi bi-x-circle"></i> Close Report
+        </button>
+        <button type="button" class="btn-analyze" style="width:auto; padding:.65rem 1.75rem; font-size:.88rem;" onclick="window.print()">
+          <i class="bi bi-printer"></i> Print Report
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- =============================================
+     BOOTSTRAP 5 JS
+============================================= -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+<!-- =============================================
+     APPLICATION JAVASCRIPT
+============================================= -->
+<script>
+"use strict";
+
+/* -----------------------------------------------
+   THEME TOGGLE
+----------------------------------------------- */
+const html = document.documentElement;
+const themeBtn  = document.getElementById('themeToggle');
+const themeIcon = document.getElementById('themeIcon');
+
+function applyTheme(theme) {
+  html.setAttribute('data-theme', theme);
+  themeIcon.className = theme === 'dark' ? 'bi bi-sun-fill' : 'bi bi-moon-stars-fill';
+  localStorage.setItem('netsense-theme', theme);
+}
+
+themeBtn.addEventListener('click', () => {
+  applyTheme(html.getAttribute('data-theme') === 'dark' ? 'light' : 'dark');
+});
+
+(function initTheme() {
+  const saved = localStorage.getItem('netsense-theme');
+  const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+  applyTheme(saved || (prefersDark ? 'dark' : 'light'));
+})();
+
+
+/* -----------------------------------------------
+   SCROLL TO TOP
+----------------------------------------------- */
+const scrollTopBtn = document.getElementById('scrollTop');
+
+window.addEventListener('scroll', () => {
+  scrollTopBtn.classList.toggle('visible', window.scrollY > 400);
+});
+
+scrollTopBtn.addEventListener('click', () => {
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+});
+
+
+/* -----------------------------------------------
+   HERO ANIMATED CHART
+----------------------------------------------- */
+(function buildHeroChart() {
+  const data  = [3, 6, 4, 7, 5, 9, 8];
+  const max   = Math.max(...data);
+  const colors = ['#6366f1','#818cf8','#6366f1','#ef4444','#6366f1','#f59e0b','#f59e0b'];
+  const wrap  = document.getElementById('heroChart');
+
+  data.forEach((v, i) => {
+    const bar = document.createElement('div');
+    bar.className = 'chart-bar';
+    bar.style.cssText = `height:0; background:${colors[i]}; border-radius:4px 4px 0 0; transition: height .9s ease ${i * .08}s;`;
+    wrap.appendChild(bar);
+    setTimeout(() => {
+      bar.style.height = `${(v / max) * 80}px`;
+    }, 300);
+  });
+
+  // Animate hero progress bar
+  setTimeout(() => {
+    document.getElementById('heroProgress').style.width = '58%';
+  }, 600);
+})();
+
+
+/* -----------------------------------------------
+   SCORING ENGINE
+----------------------------------------------- */
+function calcScore(hours, answers) {
+  let base = 0;
+  if (hours < 3)       base = 20;
+  else if (hours <= 6) base = 50;
+  else                 base = 80;
+
+  let bonus = 0;
+  answers.forEach(ans => {
+    if (ans === 'always')    bonus += 10;
+    else if (ans === 'sometimes') bonus += 5;
+  });
+
+  return Math.min(100, base + bonus);
+}
+
+function getLevel(score) {
+  if (score < 40)  return 'low';
+  if (score < 70)  return 'medium';
+  return 'high';
+}
+
+function getLevelLabel(level) {
+  return { low: 'Low Risk', medium: 'Medium Risk', high: 'High Risk' }[level];
+}
+
+function getLevelIcon(level) {
+  return { low: 'bi-emoji-smile-fill', medium: 'bi-emoji-neutral-fill', high: 'bi-emoji-frown-fill' }[level];
+}
+
+function getProgressColor(level) {
+  return {
+    low:    'linear-gradient(90deg, #22c55e, #86efac)',
+    medium: 'linear-gradient(90deg, #f59e0b, #fcd34d)',
+    high:   'linear-gradient(90deg, #ef4444, #fca5a5)'
+  }[level];
+}
+
+function getFeedback(level, hours) {
+  const msgs = {
+    low: `Great news! With only ${hours} hour(s) of daily internet usage and minimal behavioral risk indicators, your digital habits appear healthy and balanced. You have good control over your online time and it doesn't appear to be significantly impacting your wellbeing. Keep up these positive habits and continue setting a good example for healthy internet use.`,
+    medium: `Your analysis shows ${hours} hour(s) of daily internet use combined with some behavioral risk patterns. While your usage isn't alarming, there are early signs worth addressing — such as occasional anxiety without internet or losing track of time online. This is a perfect opportunity to build healthier digital boundaries before habits become harder to change.`,
+    high: `Your results indicate ${hours} hour(s) of daily usage with several significant behavioral risk factors. This level of internet engagement can negatively impact sleep quality, mental health, real-world relationships, and productivity. We strongly encourage you to review our recommendations below and consider speaking with a digital wellness professional.`
+  };
+  return msgs[level];
+}
+
+
+/* -----------------------------------------------
+   RECOMMENDATION DATA
+----------------------------------------------- */
+const allRecs = {
+  low: [
+    { icon: 'bi-calendar2-check', color: '#dcfce7', iconColor: '#16a34a', title: 'Maintain Your Balance', desc: 'You\'re doing well! Continue your healthy habits — occasional screen-time audits every month keep you on track.' },
+    { icon: 'bi-person-arms-up', color: '#e0e7ff', iconColor: '#6366f1', title: 'Embrace Offline Activities', desc: 'Invest your free time in hobbies, sports, or learning a new skill that doesn\'t involve a screen.' },
+    { icon: 'bi-moon-stars-fill', color: '#fef9c3', iconColor: '#a16207', title: 'Protect Your Sleep', desc: 'Avoid screens 30 minutes before bed even if you don\'t feel affected — blue light subtly disrupts melatonin.' }
+  ],
+  medium: [
+    { icon: 'bi-stopwatch-fill', color: '#fef9c3', iconColor: '#a16207', title: 'Set Daily Time Limits', desc: 'Use your device\'s built-in screen time controls (iOS Screen Time / Android Digital Wellbeing) to set daily app limits.' },
+    { icon: 'bi-moon-stars-fill', color: '#e0e7ff', iconColor: '#6366f1', title: 'Improve Sleep Hygiene', desc: 'Create a "no-phone zone" in your bedroom. Keep devices charging outside the room for better sleep quality.' },
+    { icon: 'bi-chat-heart-fill', color: '#dcfce7', iconColor: '#16a34a', title: 'Prioritize Real-Life Connections', desc: 'Schedule regular in-person meetups with friends and family to reinforce offline social bonds.' },
+    { icon: 'bi-journal-check', color: '#fce7f3', iconColor: '#a21caf', title: 'Track Your Usage Daily', desc: 'Keep a simple 5-minute journal of how you spent your online time. Awareness is the first step to change.' }
+  ],
+  high: [
+    { icon: 'bi-clock-history', color: '#fee2e2', iconColor: '#dc2626', title: 'Reduce Screen Time Immediately', desc: 'Aim to cut your daily usage by 30 minutes each week. Gradual reduction is more sustainable than cold turkey.' },
+    { icon: 'bi-phone-vibrate', color: '#fef9c3', iconColor: '#a16207', title: 'Enable Strict App Limits', desc: 'Use apps like Freedom, Opal, or built-in parental controls to hard-block distracting apps during key hours.' },
+    { icon: 'bi-person-heart', color: '#dcfce7', iconColor: '#16a34a', title: 'Seek Professional Support', desc: 'A therapist or counselor experienced in behavioral addiction can provide personalized coping strategies and accountability.' },
+    { icon: 'bi-tree-fill', color: '#e0e7ff', iconColor: '#6366f1', title: 'Practice Offline Mindfulness', desc: 'Introduce daily mindfulness practices — walking, meditation, or yoga — to reduce the urge to check devices compulsively.' },
+    { icon: 'bi-moon-fill', color: '#fce7f3', iconColor: '#a21caf', title: 'Digital Detox Weekends', desc: 'Commit to one screen-free day per week. Start with mornings only, then build to full days as your confidence grows.' }
+  ]
+};
+
+
+/* -----------------------------------------------
+   RENDER RESULTS
+----------------------------------------------- */
+let lastScore = 0;
+let lastLevel = 'low';
+let lastAnswers = [];
+let lastHours = 0;
+
+function animateCount(el, target, duration) {
+  const start = Date.now();
+  const tick = () => {
+    const elapsed = Date.now() - start;
+    const progress = Math.min(elapsed / duration, 1);
+    const eased = 1 - Math.pow(1 - progress, 3);
+    el.textContent = Math.round(eased * target);
+    if (progress < 1) requestAnimationFrame(tick);
+  };
+  requestAnimationFrame(tick);
+}
+
+function renderResults(score, level, hours, answers) {
+  // Show section
+  const section = document.getElementById('results');
+  section.style.display = 'block';
+  section.scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+  // Animate score ring
+  const arc     = document.getElementById('scoreArc');
+  const circum  = 2 * Math.PI * 68; // ~427
+  const offset  = circum - (score / 100) * circum;
+
+  const strokeMap = { low: '#22c55e', medium: '#f59e0b', high: '#ef4444' };
+  setTimeout(() => {
+    arc.style.strokeDashoffset = offset;
+    arc.style.stroke = strokeMap[level];
+  }, 200);
+
+  // Animate counter
+  const scoreEl = document.getElementById('scoreDisplay');
+  animateCount(scoreEl, score, 1500);
+
+  // Progress bar
+  const pb = document.getElementById('mainProgressBar');
+  pb.style.background = getProgressColor(level);
+  setTimeout(() => { pb.style.width = score + '%'; }, 300);
+  document.getElementById('progressLabel').textContent = `${score} / 100 points`;
+
+  // Level badge
+  const badge = document.getElementById('levelBadge');
+  badge.className = `level-badge ${level}`;
+  badge.innerHTML = `<i class="bi ${getLevelIcon(level)}"></i> ${getLevelLabel(level)}`;
+
+  // Feedback
+  document.getElementById('feedbackText').textContent = getFeedback(level, hours);
+
+  // Mini stats
+  const riskCount = answers.filter(a => a !== 'never').length;
+  document.getElementById('statHours').textContent  = hours + 'h';
+  document.getElementById('statRisks').textContent  = riskCount + '/4';
+  document.getElementById('statLevel').textContent  = getLevelLabel(level).split(' ')[0];
+
+  // Recommendations
+  const recs  = allRecs[level];
+  const grid  = document.getElementById('recCards');
+  grid.innerHTML = '';
+  const colSizes = { 3: 'col-md-4', 4: 'col-md-3 col-sm-6', 5: 'col-md col-sm-6' };
+  const colClass = colSizes[recs.length] || 'col-md-4 col-sm-6';
+
+  recs.forEach((r, i) => {
+    grid.innerHTML += `
+      <div class="${colClass} fade-in-up" style="animation-delay:${i * .08}s">
+        <div class="rec-card">
+          <div class="rec-icon" style="background:${r.color}; color:${r.iconColor};">
+            <i class="bi ${r.icon}"></i>
+          </div>
+          <h6>${r.title}</h6>
+          <p>${r.desc}</p>
+        </div>
+      </div>`;
+  });
+
+  // Populate modal
+  populateModal(score, level, hours, answers);
+}
+
+
+/* -----------------------------------------------
+   MODAL POPULATION
+----------------------------------------------- */
+function populateModal(score, level, hours, answers) {
+  document.getElementById('modalScore').textContent = score + ' / 100';
+
+  const mlevel = document.getElementById('modalLevel');
+  mlevel.className = `level-badge ${level}`;
+  mlevel.innerHTML = `<i class="bi ${getLevelIcon(level)}"></i> ${getLevelLabel(level)}`;
+
+  const qLabels = [
+    'Internet use before sleep',
+    'Anxiety without internet',
+    'Losing track of time online',
+    'Preferring online over offline'
+  ];
+
+  const answerScores = answers.map(a => a === 'always' ? 10 : a === 'sometimes' ? 5 : 0);
+  const baseScore = Math.min(80, score - answerScores.reduce((a,b) => a+b, 0) < 0 ? 0 : score - answerScores.reduce((a,b)=>a+b,0));
+
+  let html = `<div class="breakdown-row"><span class="label"><i class="bi bi-clock me-2"></i>Base score (${hours}h/day)</span><span class="value">+${baseScore < 0 ? 0 : baseScore} pts</span></div>`;
+  qLabels.forEach((q, i) => {
+    const pts = answerScores[i];
+    html += `<div class="breakdown-row"><span class="label"><i class="bi bi-dot me-1"></i>${q} (${answers[i]})</span><span class="value ${pts > 0 ? '' : ''}" style="color:${pts > 0 ? 'var(--warning)' : 'var(--success)'}">${pts > 0 ? '+' : ''}${pts} pts</span></div>`;
+  });
+  html += `<div class="breakdown-row" style="font-weight:700;"><span class="label" style="color:var(--text-primary);">Total Score</span><span class="value" style="font-size:1.1rem;">${score} / 100</span></div>`;
+  document.getElementById('breakdownList').innerHTML = html;
+
+  const advice = {
+    low: '<ul style="margin:0;padding-left:1.2rem;">' +
+         '<li>Your habits are healthy — maintain consistency.</li>' +
+         '<li>Consider quarterly digital audits to stay accountable.</li>' +
+         '<li>Be mindful of creeping usage during holidays and weekends.</li>' +
+         '</ul>',
+    medium: '<ul style="margin:0;padding-left:1.2rem;">' +
+            '<li>Set hard daily limits using device parental controls.</li>' +
+            '<li>Establish phone-free zones (meals, bedroom, social gatherings).</li>' +
+            '<li>Try a 24-hour digital detox once per month.</li>' +
+            '<li>Replace one hour of daily browsing with a physical activity.</li>' +
+            '</ul>',
+    high: '<ul style="margin:0;padding-left:1.2rem;">' +
+          '<li>Consult a mental health professional for structured support.</li>' +
+          '<li>Use strict app-blocking software to enforce boundaries.</li>' +
+          '<li>Inform close friends or family to hold you accountable.</li>' +
+          '<li>Replace compulsive checking habits with mindfulness exercises.</li>' +
+          '<li>Track progress weekly and celebrate small wins.</li>' +
+          '</ul>'
+  };
+  document.getElementById('modalAdvice').innerHTML = advice[level];
+
+  const motivations = {
+    low:    '🌟 You\'re doing great! A little mindfulness goes a long way — your healthy habits today build resilience for tomorrow. Keep it up!',
+    medium: '💪 Awareness is power. The fact that you took this test shows you care about your wellbeing. Small changes, consistently applied, lead to big results. You\'ve got this!',
+    high:   '❤️ It takes courage to face a difficult truth. Remember: millions of people have successfully improved their relationship with technology. Every journey begins with a single step, and you\'ve already taken it.'
+  };
+  document.getElementById('modalMotivation').textContent = motivations[level];
+}
+
+
+/* -----------------------------------------------
+   FORM SUBMISSION
+----------------------------------------------- */
+const form       = document.getElementById('analyzerForm');
+const analyzeBtn = document.getElementById('analyzeBtn');
+const resetBtn   = document.getElementById('resetBtn');
+
+form.addEventListener('submit', function(e) {
+  e.preventDefault();
+
+  // Validate hours
+  const hoursInput = document.getElementById('hoursInput');
+  const hours      = parseFloat(hoursInput.value);
+
+  if (!hoursInput.value || isNaN(hours) || hours < 0 || hours > 24) {
+    hoursInput.classList.add('is-invalid');
+    hoursInput.focus();
+    return;
+  } else {
+    hoursInput.classList.remove('is-invalid');
+  }
+
+  // Validate radio groups
+  const qNames    = ['q1', 'q2', 'q3', 'q4'];
+  const answers   = [];
+  let   allValid  = true;
+
+  qNames.forEach(name => {
+    const selected = document.querySelector(`input[name="${name}"]:checked`);
+    if (!selected) {
+      allValid = false;
+      const radios = document.querySelectorAll(`input[name="${name}"]`);
+      radios[0].closest('.question-item').style.borderColor = 'var(--danger)';
+    } else {
+      const radios = document.querySelectorAll(`input[name="${name}"]`);
+      radios[0].closest('.question-item').style.borderColor = '';
+      answers.push(selected.value);
+    }
+  });
+
+  if (!allValid) {
+    const firstInvalid = document.querySelector('.question-item[style*="danger"]');
+    if (firstInvalid) firstInvalid.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    return;
+  }
+
+  // Loading state
+  analyzeBtn.disabled = true;
+  analyzeBtn.innerHTML = '<span class="spinner"></span> Analyzing...';
+
+  setTimeout(() => {
+    const score = calcScore(hours, answers);
+    const level = getLevel(score);
+
+    lastScore   = score;
+    lastLevel   = level;
+    lastAnswers = answers;
+    lastHours   = hours;
+
+    renderResults(score, level, hours, answers);
+
+    analyzeBtn.disabled = false;
+    analyzeBtn.innerHTML = '<i class="bi bi-lightning-charge-fill"></i> Analyze My Usage';
+  }, 1800);
+});
+
+// Reset form
+resetBtn.addEventListener('click', () => {
+  form.reset();
+  document.getElementById('hoursInput').classList.remove('is-invalid');
+  document.querySelectorAll('.question-item').forEach(el => el.style.borderColor = '');
+  document.getElementById('results').style.display = 'none';
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+});
+
+// Remove invalid state on input
+document.getElementById('hoursInput').addEventListener('input', function() {
+  this.classList.remove('is-invalid');
+});
+
+// Remove border on question selection
+['q1','q2','q3','q4'].forEach(name => {
+  document.querySelectorAll(`input[name="${name}"]`).forEach(radio => {
+    radio.addEventListener('change', () => {
+      radio.closest('.question-item').style.borderColor = '';
+    });
+  });
+});
+
+
+/* -----------------------------------------------
+   ACTIVE NAV LINK ON SCROLL
+----------------------------------------------- */
+(function initScrollSpy() {
+  const sections = document.querySelectorAll('section[id]');
+  const links    = document.querySelectorAll('.nav-link');
+
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        links.forEach(l => l.classList.remove('active'));
+        const active = document.querySelector(`.nav-link[href="#${entry.target.id}"]`);
+        if (active) active.classList.add('active');
+      }
+    });
+  }, { threshold: 0.3 });
+
+  sections.forEach(s => observer.observe(s));
+})();
+
+</script>
 </body>
 </html>
