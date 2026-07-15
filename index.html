@@ -270,12 +270,17 @@
             background: none;
             border: none;
             color: var(--text-secondary);
-            font-size: 1.25rem;
+            font-size: 1.5rem;
             cursor: pointer;
+            z-index: 110;
         }
 
         .btn-close:hover {
             color: var(--text-primary);
+        }
+
+        .btn-close i {
+            pointer-events: none;
         }
 
         .drawer-title {
@@ -393,10 +398,6 @@
             line-height: 1.5;
             color: #e0e0e0;
         }
-
-        .k { color: #cf8efc; }
-        .v { color: #70e6a4; }
-        .c { color: #666666; font-style: italic; }
     </style>
 </head>
 <body>
@@ -419,7 +420,6 @@
     <main class="roadmap-workspace">
         <div class="roadmap-flow-container">
             
-            <!-- 1. Source & Identity Control -->
             <div class="roadmap-group">
                 <div class="group-header">1. Source & Identity Control</div>
                 <div class="roadmap-branch">
@@ -440,7 +440,6 @@
                 </div>
             </div>
 
-            <!-- 2. Isolation & Container Runtimes -->
             <div class="roadmap-group">
                 <div class="group-header">2. Isolation & Container Runtimes</div>
                 <div class="roadmap-branch">
@@ -475,7 +474,6 @@
                 </div>
             </div>
 
-            <!-- 3. Infrastructure & Cloud Engines -->
             <div class="roadmap-group">
                 <div class="group-header">3. Infrastructure & Cloud Engines</div>
                 <div class="roadmap-branch">
@@ -496,7 +494,6 @@
                 </div>
             </div>
 
-            <!-- 4. Orchestration & Continuous Delivery -->
             <div class="roadmap-group">
                 <div class="group-header">4. Orchestration & Continuous Delivery</div>
                 <div class="roadmap-branch">
@@ -517,7 +514,6 @@
                 </div>
             </div>
 
-            <!-- 5. Automation & GitOps Systems -->
             <div class="roadmap-group">
                 <div class="group-header">5. Automation & GitOps Systems</div>
                 <div class="roadmap-branch">
@@ -541,20 +537,19 @@
         </div>
     </main>
 
-    <!-- SLIDEOUT PANEL ARCHITECTURE -->
-   <aside class="info-drawer" id="infoDrawer">
-    <button class="btn-close" onclick="closeRoadmapDrawer()" aria-label="Close">
-        <i class="bi bi-x" style="pointer-events: none; font-size: 1.5rem; display: block;"></i>
-    </button>
-    
-    <div class="drawer-header">
-        <span class="priority-badge core" id="drawerBadge">CORE</span>
-        <h2 class="drawer-title" id="drawerTitle">Manual</h2>
-    </div>
+    <aside class="info-drawer" id="infoDrawer">
+        <button class="btn-close" onclick="closeRoadmapDrawer();" aria-label="Close">
+            <i class="bi bi-x"></i>
+        </button>
+        
+        <div class="drawer-header">
+            <span class="priority-badge core" id="drawerBadge">CORE</span>
+            <h2 class="drawer-title" id="drawerTitle">Manual</h2>
+        </div>
 
-    <nav class="drawer-tabs" id="drawerTabs"></nav>
-    <div class="drawer-body" id="drawerBody"></div>
-</aside>
+        <nav class="drawer-tabs" id="drawerTabs"></nav>
+        <div class="drawer-body" id="drawerBody"></div>
+    </aside>
 
     <script>
         const deepDatabase = {
@@ -767,8 +762,23 @@
                 tabContainer.appendChild(btn);
             });
 
-            document.getElementById("infoDrawer").classList.add("open");
+            // Slide the drawer open and reset inline override
+            const drawer = document.getElementById("infoDrawer");
+            if (drawer) {
+                drawer.style.right = "0";
+                drawer.classList.add("open");
+            }
+
             switchTab(toolData.subtopics[0].id);
+        }
+
+        function closeRoadmapDrawer() {
+            const drawer = document.getElementById("infoDrawer");
+            if (drawer) {
+                drawer.classList.remove("open");
+                drawer.style.right = "-650px"; // Manual CSS fallback guarantee
+            }
+            document.querySelectorAll(".roadmap-node").forEach(n => n.classList.remove("active-node"));
         }
 
         function switchTab(subtopicId, tabElement = null) {
@@ -812,11 +822,6 @@
                     </div>
                 </div>
             `;
-        }
-
-        function closeRoadmapDrawer() {
-            document.getElementById("infoDrawer").classList.remove("open");
-            document.querySelectorAll(".roadmap-node").forEach(n => n.classList.remove("active-node"));
         }
 
         function toggleSystemTheme() {
